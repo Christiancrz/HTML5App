@@ -5,103 +5,58 @@
  */
 'use strict';
 
-// function calls
-function firstFunction() {
-    console.log('entering firstFunction');
-    secondFunction();
-    console.log('Exiting firstFunction');
-}
-
-function secondFunction() {
-    console.log('Entering secondFunction');
-    thirdFunction();
-    console.log('Exiting secondFunction');
-}
-
-function thirdFunction() {
-    console.log('entering thirdFunction');
-    console.log('exiting thirdFunction');
-}
-
-// firstFunction();
-
-// stack overflow
-function recursiveFunction() {
-    console.log('Entering recursiveFunction');
-    recursiveFunction();
-}
-
-/* try {
-    recursiveFunction();
-} catch (e) {
-    console.log('Stack Overflow!');
-} */
-
-// async calls
-// function first() {
-//     console.log('first');
-// }
-
-// function second() {
-//     console.log('second');
-// }
-
-// function third() {
-//     console.log('third');
-// }
-
-// console.log('start');
-
-// setTimeout(first, 1000);
-// setTimeout(second, 0);
-// third();
-
-// console.log('end');
-
-// error handling
-function functionA() {
-    try {
-        functionB();
-    } catch (e) {
-        console.log('caught an error! ' + e);
-    }
-}
-
-function functionB() {
-    functionC();
-}
-
-function functionC() {
-    throw new Error('Something went wrong!');
-}
-
-// functionA();
+const appUrl = 'http://localhost:3000/todos';
 
 document.addEventListener('DOMContentLoaded', () => {
-    const form = document.getElementById('myForm');
-    form.addEventListener('submit', (event) => {
-        // ------Prevents refreshing------
+    fetchTodos();
+
+    const addTodoForm = document.getElementById('addTodoForm');
+    addTodoForm.addEventListener('submit', (event) => {
         event.preventDefault();
-        // -------------------------------
-        const formData = new FormData(form);
-        const data = {};
-        formData.forEach((value, key) => {
-            data[key] = value;
-        });
-        console.log(JSON.stringify(data));
+        const title = document.getElementById('title').value;
+        addTodoAJAX(title);
     });
 });
 
-const fetchDataButton = document.getElementById('fetchDataButton');
-fetchDataButton.addEventListener('click', () => {
-    fetch('http://jsfiddle.net/echo/jsonp/')
-        .then(response => response.json())
-        .then(data => {
-            console.log(data);
-            document.getElementById('dataDisplay').textContent = JSON.stringify(data);
-        })
-        .catch(error => console.error('Error:', error));
-});
+function fetchTodos(){
+    const xhr = new XMLHttpRequest();
+    xhr.open('GET', appUrl, true);
+    xhr.onload = function() {
+        if (xhr.status == 200) {
+            const todos = JSON.parse(xhr.responseText);
+            const todosDiv = document.getElementById('todos');
+            todosDiv.innerHTML ='';
+            todos.forEach(todo => {
+                const todoDiv = document.createElement('div');
+                todoDiv.className = 'todo';
+                todoDiv.innerHTML = `
+                    <p class="${todo.completed ? 'completed' : '' }"><strong>ID:</strong> ${todo.id}</p>
+                    <p class="${todo.completed ? 'completed' : '' }"><strong>Title:</strong> ${todo.title}</p>
+                    <p class="${todo.completed ? 'completed' : '' }"><strong>Completed:</strong> ${todo.completed}</p>
+                    <button onclick="toggleComnpleteAJAX(${tod.id})">${todo.completed ? 'Mark Complete' : 'Mark Incomplete'}</button>
+                    <button onclik="deleteTodoAJAX(${todo.id})">Delete</button>                
+                `;
+                todosDiv.appendChild(todoDiv);
+            });
+        }
+    };
+
+    xhr.send();
+}
+
+function addTodoAJAX(title) {
+    // POST
+}
+function toggleComnpleteAJAX(id) {
+    // 1. GET todo by :id
+    // 2. PUT todo by :id
+    // 3. respond
+
+}
+
+function deleteTodoAJAX(id){
+    // DELETE todo by :id
+}
 
 
 export default class App {
