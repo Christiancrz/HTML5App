@@ -2,6 +2,8 @@ import express from 'express';
 const app =  express();
 const port = 3000;
 
+
+app.use('/', express.static(__dirname, { index: 'index.html'}));
 app.use(express.json());
 
 let todos = [
@@ -10,8 +12,9 @@ let todos = [
 ];
 
 //GET all todos
-app.get('/todos', (req,res) => {
+app.get('/todos', (req, res) => {
     res.json(todos);
+    console.log('server hit');
 });
 
 
